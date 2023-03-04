@@ -1,0 +1,3 @@
+include README.md
+include mdinfo/mtlparser.tx
+include mdinfo/filetemplate.md
