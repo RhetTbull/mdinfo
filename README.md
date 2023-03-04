@@ -1,5 +1,8 @@
 # mdinfo
 
+
+**TODO** Update README. The following is really from [autofile](https://github.com/RhetTbull/autofile) which I used to bootstrip mdinfo using the autofile template system.
+
 Command line app (written in python) to automatically move or copy files based on metadata associated with the files.  For example, file your photos based on EXIF metadata or use MP3 tags to file your music files.
 
 mdinfo uses a template system to specify the target directory and/or filename based on the file's metadata.  For example: 
