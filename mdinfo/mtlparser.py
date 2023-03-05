@@ -7,7 +7,7 @@
 import pathlib
 import re
 import shlex
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, List, Optional, Tuple
 
 from textx import TextXSyntaxError, metamodel_from_file
 
@@ -176,11 +176,13 @@ class MTLParser:
     def _render_statement(
         self,
         statement,
+        field_arg=None,
     ):
         results = []
         for ts in statement.template_strings:
             results = self._render_template_string(
                 ts,
+                field_arg,
                 results=results,
             )
 
@@ -194,6 +196,7 @@ class MTLParser:
     def _render_template_string(
         self,
         ts,
+        field_arg,
         results=None,
     ):
         """Render a TemplateString object"""
@@ -210,6 +213,10 @@ class MTLParser:
             if ts.template.filter is not None:
                 filters = ts.template.filter.value
 
+            # process field arguments
+            if ts.template.fieldarg is not None:
+                field_arg = ts.template.fieldarg.value
+
             # process delim
             if ts.template.delim is not None:
                 # if value is None, means format was {+field}
@@ -223,6 +230,7 @@ class MTLParser:
                 if ts.template.bool.value is not None:
                     bool_val = self._render_statement(
                         ts.template.bool.value,
+                        field_arg,
                     )
                 else:
                     # blank bool value
@@ -237,6 +245,7 @@ class MTLParser:
                 if ts.template.default.value is not None:
                     default = self._render_statement(
                         ts.template.default.value,
+                        field_arg,
                     )
                 else:
                     # blank default value
@@ -274,7 +283,7 @@ class MTLParser:
                 self.variables[subfield] = default
                 vals = []
             else:
-                vals = self.get_field_values(field, subfield, default)
+                vals = self.get_field_values(field, subfield, field_arg, default)
 
             if vals and self.sanitize_value:
                 vals = [self.sanitize_value(v) for v in vals]
@@ -455,25 +464,37 @@ class MTLParser:
         return values
 
     def get_field_values(
-        self, field: str, subfield: str, default: List[str]
-    ) -> Optional[List[Optional[str]]]:
+        self,
+        field: str,
+        subfield: Optional[str],
+        field_arg: Optional[str],
+        default: List[str],
+    ) -> Tuple[List[str], List[str]]:
         """Return values for a given template field"""
 
         for get_function in self.field_values:
-            values = get_function(field, subfield, default)
+            values = get_function(field, subfield, field_arg, default)
             if values is not None:
                 return values
         return None
 
     def get_punctuation_values(
-        self, field: str, subfield: str, default: List[str]
+        self,
+        field: str,
+        subfield: Optional[str],
+        field_arg: Optional[str],
+        default: List[str],
     ) -> Optional[List[Optional[str]]]:
         """Return values for punctuation template fields, e.g. {crlf}, etc."""
         value = PUNCTUATION_FIELDS.get("{" + field + "}")
         return [value[1]] if value else None
 
     def get_format_values(
-        self, field: str, subfield: str, default: List[str]
+        self,
+        field: str,
+        subfield: Optional[str],
+        field_arg: Optional[str],
+        default: List[str],
     ) -> Optional[List[Optional[str]]]:
         """Return values for {strip}, {format} templates"""
         if field == "strip":

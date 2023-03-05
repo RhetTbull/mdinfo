@@ -33,11 +33,7 @@ class SyntaxError(Exception):
 DEFAULT_PLUGINS = (
     "mdinfo.plugins.templates.docx",
     "mdinfo.plugins.templates.pdf",
-    # "mdinfo.plugins.templates.exiftool",
     "mdinfo.plugins.templates.audio",
-    # "mdinfo.plugins.templates.uti",
-    # "mdinfo.plugins.templates.finder",
-    # "mdinfo.plugins.templates.mdls",
     "mdinfo.plugins.templates.filepath",
     "mdinfo.plugins.templates.filedates",
     "mdinfo.plugins.templates.filestat",
@@ -91,12 +87,19 @@ class FileTemplate:
         self.quote = options.quote
         self.dest_path = options.dest_path
 
-    def get_field_value(self, field, subfield, default):
+    def get_field_value(
+        self,
+        field: str,
+        subfield: Optional[str],
+        field_arg: Optional[str],
+        default: List[str],
+    ) -> Optional[List[Optional[str]]]:
         """Get the value of a field"""
         return self.hook.get_template_value(
             filepath=self.filepath,
             field=field,
             subfield=subfield,
+            field_arg=field_arg,
             default=default,
             options=self.options,
         )

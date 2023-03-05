@@ -35,6 +35,7 @@ FIELD_VALUES = {
     "foobar": ["foo,bar"],
     "answer": ["42"],
     "list": ["a", "c", "b", "b", "c", "c"],
+    "foo(42)": ["The answer is 42"],
 }
 
 TEST_DATA = [
@@ -51,6 +52,8 @@ TEST_DATA = [
     ["{fizz}", [" fizz buzz "]],
     ["{fizz[z,s]}", [" fiss buss "]],
     ["{fizz[z,s|i,u]}", [" fuss buss "]],
+    # field args
+    ["{foo(42)}", ["The answer is 42"]],
     # filters
     ["{+foo|lower}", ["foobar"]],
     ["{+foo|upper}", ["FOOBAR"]],
@@ -164,11 +167,12 @@ class CustomParser:
             none_str=none_str,
         )
 
-    def get_field_values(self, field, subfield, default):
+    def get_field_values(self, field, subfield, field_arg, default):
+        field_arg = f"({field_arg})" if field_arg else ""
         if subfield:
-            return FIELD_VALUES.get(f"{field}:{subfield}")
+            return FIELD_VALUES.get(f"{field}:{subfield}{field_arg}")
         else:
-            return FIELD_VALUES.get(f"{field}")
+            return FIELD_VALUES.get(f"{field}{field_arg}")
 
     def render(self, template_string):
         return self.parser.render(template_string)

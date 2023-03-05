@@ -1,3 +1,5 @@
+""" pluggy hookimpl specification for mdinfo template system """
+
 from typing import List, Optional, Iterable
 
 from pluggy import HookspecMarker
@@ -7,7 +9,11 @@ hookspec = HookspecMarker("mdinfo")
 
 @hookspec(firstresult=True)
 def get_template_value(
-    filepath: str, field: str, subfield: str, default: List[str]
+    filepath: str,
+    field: str,
+    subfield: Optional[str],
+    field_arg: Optional[str],
+    default: List[str],
 ) -> Optional[List[Optional[str]]]:
     """Called by template.py to get template value for custom template
 
