@@ -306,7 +306,3 @@ def format_markdown_str(string, width=78):
     help_str = sio.getvalue()
     sio.close()
     return help_str
-
-
-def main():
-    cli()
