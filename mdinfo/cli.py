@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import io
 import re
+import sys
 from typing import List, Optional
 
 import click
@@ -20,14 +21,12 @@ from cloup import (
     option_group,
     version_option,
 )
-from cloup.constraints import (
-    If,
-    RequireExactly,
-    accept_none,
-)
+from cloup.constraints import If, RequireExactly, accept_none
 from rich.console import Console
 from rich.highlighter import NullHighlighter
 from rich.markdown import Markdown
+
+from mdinfo.mtlparser import UnknownFieldError
 
 from ._version import __version__
 from .constants import APP_NAME
@@ -230,17 +229,20 @@ def cli(
     files: list[str],
 ):
     """Print metadata info for files"""
-    if print_option:
-        print_templates_for_files(
-            files, print_option, no_filename, path, null_separator
-        )
-    if csv_option:
-        print_templates_to_csv_for_files(
-            files, csv_option, no_filename, path, no_header, delimiter
-        )
-    if json_option:
-        print_templates_to_json_for_files(files, json_option, no_filename, path, array)
-
+    try:
+        if print_option:
+            print_templates_for_files(
+                files, print_option, no_filename, path, null_separator
+            )
+        if csv_option:
+            print_templates_to_csv_for_files(
+                files, csv_option, no_filename, path, no_header, delimiter
+            )
+        if json_option:
+            print_templates_to_json_for_files(files, json_option, no_filename, path, array)
+    except UnknownFieldError as e:
+        print_error(e)
+        sys.exit(1)
 
 def rich_text(text, width=78):
     """Return rich formatted text"""
