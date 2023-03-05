@@ -23,6 +23,8 @@ pytest = "^7.2.1"
 bump2version = "^1.0.1"
 cogapp = "^3.3.0"
 freezegun = "^1.2.2"
+doit = "^0.36.0"
+build = "^0.10.0"
 
 [build-system]
 requires = ["poetry-core"]

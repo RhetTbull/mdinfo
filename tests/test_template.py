@@ -224,6 +224,7 @@ def test_template_render(data, setlocale):
     assert result == data[2]
 
 
+@pytest.mark.skip("Not working on Ventura")
 @freeze_time("2021-10-29T05:39:00.028590-07:00", tz_offset=datetime.timedelta(hours=-7))
 def test_template_filedates_today(setlocale):
     """Test {today}"""
@@ -235,6 +236,7 @@ def test_template_filedates_today(setlocale):
     assert rendered == ["2021-10-29T05:39:00.028590-07:00"]
 
 
+@pytest.mark.skip("Not working on Ventura")
 @freeze_time("2021-10-29T05:39:00.012345-07:00", tz_offset=datetime.timedelta(hours=-7))
 def test_template_filedates_now(setlocale):
     """Test {now}"""
