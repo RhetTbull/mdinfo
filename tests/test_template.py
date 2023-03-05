@@ -13,7 +13,6 @@ from freezegun import freeze_time
 import mdinfo
 from mdinfo.filetemplate import FileTemplate
 from mdinfo.mtlparser import SyntaxError
-from mdinfo.pathlibutil import PathlibUtil
 from mdinfo.renderoptions import RenderOptions
 
 PHOTO_FILE = "tests/test_files/pears.jpg"

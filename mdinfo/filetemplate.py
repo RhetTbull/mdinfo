@@ -14,7 +14,6 @@ from ._version import __version__
 from .constants import APP_NAME
 from .mtlparser import FORMAT_FIELDS, PUNCTUATION_FIELDS, MTLParser
 from .path_utils import sanitize_dirname, sanitize_filename, sanitize_pathpart
-from .pathlibutil import PathlibUtil
 from .renderoptions import RenderOptions
 
 
@@ -61,11 +60,11 @@ locale.setlocale(locale.LC_ALL, "")
 class FileTemplate:
     """FileTemplate class to render a template string from a file and it's associated metadata"""
 
-    def __init__(self, filepath: Union[str, PathlibUtil, pathlib.Path]):
+    def __init__(self, filepath: Union[str, pathlib.Path]):
         """Inits FileTemplate class with filepath"""
 
         if isinstance(filepath, str):
-            filepath = PathlibUtil(filepath)
+            filepath = pathlib.Path(filepath)
         if not filepath.exists():
             raise FileNotFoundError(f"File {filepath} does not exist")
 
