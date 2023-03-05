@@ -345,6 +345,13 @@ class MTLParser:
                             f"comparison operators may only be used with values that can be converted to numbers: {vals} {conditional_value}"
                         )
 
+                if operator in ["contains", "matches", "startswith", "endswith"]:
+                    # process any "or" values separated by "|"
+                    temp_values = []
+                    for c in conditional_value:
+                        temp_values.extend(c.split("|"))
+                    conditional_value = temp_values
+
                 if operator == "contains":
                     vals = string_test(lambda v, c: c in v)
                 elif operator == "matches":
@@ -355,16 +362,18 @@ class MTLParser:
                     vals = string_test(lambda v, c: v.endswith(c))
                 elif operator == "==":
                     match = sorted(vals) == sorted(conditional_value)
-                    if (match and not negation) or (negation and not match):
-                        vals = ["True"]
-                    else:
-                        vals = []
+                    vals = (
+                        ["True"]
+                        if (match and not negation) or (negation and not match)
+                        else []
+                    )
                 elif operator == "!=":
                     match = sorted(vals) != sorted(conditional_value)
-                    if (match and not negation) or (negation and not match):
-                        vals = ["True"]
-                    else:
-                        vals = []
+                    vals = (
+                        ["True"]
+                        if (match and not negation) or (negation and not match)
+                        else []
+                    )
                 elif operator == "<":
                     vals = comparison_test(lambda v, c: v < c)
                 elif operator == "<=":
@@ -375,7 +384,7 @@ class MTLParser:
                     vals = comparison_test(lambda v, c: v >= c)
 
             if is_bool:
-                vals = default if not vals else bool_val
+                vals = bool_val if vals else default
             elif not vals and field != "var":
                 # don't assign default value if the template was variable assignment
                 vals = default or [self.none_str]
