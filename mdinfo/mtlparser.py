@@ -214,46 +214,48 @@ class MTLParser:
                 filters = ts.template.filter.value
 
             # process field arguments
+            field_arg = None
             if ts.template.fieldarg is not None:
                 field_arg = ts.template.fieldarg.value
 
             # process delim
+            delim = None
             if ts.template.delim is not None:
                 # if value is None, means format was {+field}
                 delim = ts.template.delim.value or ""
                 delim = self.expand_variables_to_str(delim, "delim")
-            else:
-                delim = None
 
+            # process bool
+            is_bool = False
+            bool_val = None
             if ts.template.bool is not None:
                 is_bool = True
-                if ts.template.bool.value is not None:
-                    bool_val = self._render_statement(
+                bool_val = (
+                    self._render_statement(
                         ts.template.bool.value,
                         field_arg,
                     )
-                else:
-                    # blank bool value
-                    bool_val = [""]
-            else:
-                is_bool = False
-                bool_val = None
+                    if ts.template.bool.value is not None
+                    else [""]
+                )
 
             # process default
+            default = []
             if ts.template.default is not None:
                 # default is also a TemplateString
-                if ts.template.default.value is not None:
-                    default = self._render_statement(
+                default = (
+                    self._render_statement(
                         ts.template.default.value,
                         field_arg,
                     )
-                else:
-                    # blank default value
-                    default = [""]
-            else:
-                default = []
+                    if ts.template.default.value is not None
+                    else [""]
+                )
 
             # process conditional
+            operator = None
+            negation = None
+            conditional_value = []
             if ts.template.conditional is not None:
                 operator = ts.template.conditional.operator
                 negation = ts.template.conditional.negation
@@ -265,10 +267,6 @@ class MTLParser:
                 else:
                     # this shouldn't happen
                     conditional_value = [""]
-            else:
-                operator = None
-                negation = None
-                conditional_value = []
 
             if field.startswith("%"):
                 # variable in form {%var}
