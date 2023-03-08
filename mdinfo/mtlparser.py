@@ -328,10 +328,11 @@ class MTLParser:
                                 break
                         if match:
                             break
-                    if (match and not negation) or (negation and not match):
-                        return ["True"]
-                    else:
-                        return []
+                    return (
+                        ["True"]
+                        if (match and not negation) or (negation and not match)
+                        else []
+                    )
 
                 def comparison_test(test_function):
                     """Perform numerical comparisons using test_function; closure to capture conditional_val, vals, negation"""
@@ -345,10 +346,11 @@ class MTLParser:
                             bool(test_function(float(v), float(conditional_value[0])))
                             for v in vals
                         )
-                        if (match and not negation) or (negation and not match):
-                            return ["True"]
-                        else:
-                            return []
+                        return (
+                            ["True"]
+                            if (match and not negation) or (negation and not match)
+                            else []
+                        )
                     except ValueError:
                         raise SyntaxError(
                             f"comparison operators may only be used with values that can be converted to numbers: {vals} {conditional_value}"
@@ -441,16 +443,16 @@ class MTLParser:
         while True:
             for value in values:
                 match = variable_match.search(value)
-                if not match or not match.group(1):
+                if not match or not match[1]:
                     break
-                var = match.group(1)
+                var = match[1]
                 var_name = var[1:]
                 if var_name not in self.variables:
                     raise SyntaxError(f"Variable '{var_name}' is not defined.")
                 for val in values:
                     for var_val in self.variables[var_name]:
                         new_values.append(
-                            re.sub(r"(%%)*" + f"{var}", r"\g<1>" + var_val, val)
+                            re.sub(f"(%%)*{var}", r"\g<1>" + var_val, val)
                         )
             if new_values == values or not new_values:
                 break
