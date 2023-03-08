@@ -359,6 +359,18 @@ test-randomorder = ["pytest-randomly"]
 tox = ["tox"]
 
 [[package]]
+name = "datetime-tzutils"
+version = "1.0.1"
+description = "datetime.datetime helper functions for converting to/from UTC and other datetime manipulations"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "datetime_tzutils-1.0.1-py2.py3-none-any.whl", hash = "sha256:a37d502d9f8b5ba139952e892f8f84064a79f3883245b4a5fb6a4f2ee3700ba0"},
+    {file = "datetime_tzutils-1.0.1.tar.gz", hash = "sha256:018d8301d1b3a2b86e849cf891d36f90cf0732642d47cbfe049b0e7c6cb1769f"},
+]
+
+[[package]]
 name = "doit"
 version = "0.36.0"
 description = "doit - Automation Tool"
@@ -824,4 +836,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "00425392578ab61536adbd4bc4028324942352ae2866fa84f34f8e3fa3ca1182"
+content-hash = "698a01ddab8d20b7aa19ca13effdfe1bdf5b2302002be7d0f610e3bc7e053d00"

@@ -7,7 +7,7 @@ from typing import Iterable, List, Optional
 
 import mdinfo
 from mdinfo.datetime_formatter import DateTimeFormatter
-from mdinfo.datetime_utils import datetime_utc_to_local
+from datetime_tzutils import datetime_utc_to_local
 
 TODAY = None
 
