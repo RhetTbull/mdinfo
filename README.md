@@ -9,6 +9,7 @@ other types of metadata or different file formats.
 
 The mdinfo command line tool can output selected metadata in CSV and JSON format.
 
+Currently tested on Linux and macOS.
 ## Synopsis
 
 
