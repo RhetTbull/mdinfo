@@ -5,7 +5,7 @@ import os
 
 import pytest
 
-from mdinfo.mtlparser import MTLParser, SyntaxError
+from mdinfo.mtlparser import MTLParser, SyntaxError, TemplateString
 
 PUNCTUATION = {
     "comma": ",",
@@ -145,6 +145,227 @@ TEST_DATA = [
 ]
 
 FILTER_ARGS_REQUIRED = ["split", "chop", "chomp", "append", "prepend", "remove"]
+
+PARSER_TEST_DATA = {
+    "{foo}": [
+        TemplateString(
+            pre="",
+            delim=None,
+            field="foo",
+            subfield=None,
+            field_arg=None,
+            filters=[],
+            find_replace=[],
+            operator=None,
+            negation=None,
+            conditional=[],
+            bool=[],
+            default=[],
+            post="",
+        )
+    ],
+    "{foo:bar}": [
+        TemplateString(
+            pre="",
+            delim=None,
+            field="foo",
+            subfield="bar",
+            field_arg=None,
+            filters=[],
+            find_replace=[],
+            operator=None,
+            negation=None,
+            conditional=[],
+            bool=[],
+            default=[],
+            post="",
+        )
+    ],
+    "{foo:bar(baz)}": [
+        TemplateString(
+            pre="",
+            delim=None,
+            field="foo",
+            subfield="bar",
+            field_arg="baz",
+            filters=[],
+            find_replace=[],
+            operator=None,
+            negation=None,
+            conditional=[],
+            bool=[],
+            default=[],
+            post="",
+        )
+    ],
+    "foo{bar contains baz?{bar},}": [
+        TemplateString(
+            pre="foo",
+            delim=None,
+            field="bar",
+            subfield=None,
+            field_arg=None,
+            filters=[],
+            find_replace=[],
+            operator="contains",
+            negation=None,
+            conditional=[
+                [
+                    TemplateString(
+                        pre="baz",
+                        delim=None,
+                        field=None,
+                        subfield=None,
+                        field_arg=None,
+                        filters=[],
+                        find_replace=[],
+                        operator=None,
+                        negation=False,
+                        conditional=[],
+                        bool=[],
+                        default=None,
+                        post="",
+                    )
+                ]
+            ],
+            bool=[
+                TemplateString(
+                    pre="",
+                    delim=None,
+                    field="bar",
+                    subfield=None,
+                    field_arg=None,
+                    filters=[],
+                    find_replace=[],
+                    operator=None,
+                    negation=None,
+                    conditional=[],
+                    bool=[],
+                    default=[],
+                    post="",
+                )
+            ],
+            default=[
+                TemplateString(
+                    pre="",
+                    delim=None,
+                    field=None,
+                    subfield=None,
+                    field_arg=None,
+                    filters=[],
+                    find_replace=[],
+                    operator=None,
+                    negation=False,
+                    conditional=[],
+                    bool=[],
+                    default=None,
+                    post="",
+                )
+            ],
+            post="",
+        )
+    ],
+    "{,+foo|bar,{baz}}": [
+        TemplateString(
+            pre="",
+            delim=",",
+            field="foo",
+            subfield=None,
+            field_arg=None,
+            filters=["bar"],
+            find_replace=[],
+            operator=None,
+            negation=None,
+            conditional=[],
+            bool=[],
+            default=[
+                TemplateString(
+                    pre="",
+                    delim=None,
+                    field="baz",
+                    subfield=None,
+                    field_arg=None,
+                    filters=[],
+                    find_replace=[],
+                    operator=None,
+                    negation=None,
+                    conditional=[],
+                    bool=[],
+                    default=[],
+                    post="",
+                )
+            ],
+            post="",
+        )
+    ],
+    "{foo not contains bar?{foo},bar}": [
+        TemplateString(
+            pre="",
+            delim=None,
+            field="foo",
+            subfield=None,
+            field_arg=None,
+            filters=[],
+            find_replace=[],
+            operator="contains",
+            negation="not ",
+            conditional=[
+                [
+                    TemplateString(
+                        pre="bar",
+                        delim=None,
+                        field=None,
+                        subfield=None,
+                        field_arg=None,
+                        filters=[],
+                        find_replace=[],
+                        operator=None,
+                        negation=False,
+                        conditional=[],
+                        bool=[],
+                        default=None,
+                        post="",
+                    )
+                ]
+            ],
+            bool=[
+                TemplateString(
+                    pre="",
+                    delim=None,
+                    field="foo",
+                    subfield=None,
+                    field_arg=None,
+                    filters=[],
+                    find_replace=[],
+                    operator=None,
+                    negation=None,
+                    conditional=[],
+                    bool=[],
+                    default=[],
+                    post="",
+                )
+            ],
+            default=[
+                TemplateString(
+                    pre="bar",
+                    delim=None,
+                    field=None,
+                    subfield=None,
+                    field_arg=None,
+                    filters=[],
+                    find_replace=[],
+                    operator=None,
+                    negation=False,
+                    conditional=[],
+                    bool=[],
+                    default=None,
+                    post="",
+                )
+            ],
+            post="",
+        )
+    ],
+}
 
 
 class CustomParser:
@@ -314,3 +535,10 @@ def test_filter_error():
     template = CustomParser()
     with pytest.raises(SyntaxError):
         template.render("{foo|nope}")
+
+
+@pytest.mark.parametrize("template_string,expected", PARSER_TEST_DATA.items())
+def test_parse_statement(template_string, expected):
+    """Test parse_statement"""
+    parser = MTLParser(get_field_values=lambda *x: x)
+    assert parser.parse_statement(template_string) == expected
