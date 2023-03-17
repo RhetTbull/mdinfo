@@ -134,6 +134,36 @@ def test_cli_csv(source: pathlib.Path, target: pathlib.Path):
     ]
 
 
+def test_cli_csv_no_header(source: pathlib.Path, target: pathlib.Path):
+    """Test CLI with --csv and --no-header"""
+    from mdinfo.cli import cli
+
+    source_files = sorted(list(source.glob("*")))
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "--print",
+            "file:{filepath.name}",
+            "-p",
+            "{size}",
+            "--no-filename",
+            "--csv",
+            "--no-header",
+            *[str(p) for p in source_files],
+        ],
+    )
+    assert result.exit_code == 0
+    assert sorted(
+        s for s in [string.strip() for string in result.output.split("\n")] if s
+    ) == [
+        "flowers.jpeg,3449684",
+        "pears.jpg,2771656",
+        "warm_lights.mp3,7982019",
+    ]
+
+
 def test_cli_json(source: pathlib.Path, target: pathlib.Path):
     """Test CLI with --json"""
     from mdinfo.cli import cli
