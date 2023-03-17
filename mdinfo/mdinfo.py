@@ -58,7 +58,7 @@ def print_templates(
         else (f"{filepath}: " if path else f"{pathlib.Path(filepath).name}: ")
     )
     rendered_templates = [
-        str(t).replace( NONE_STR_SENTINEL, undefined or "") for t in rendered_templates
+        str(t).replace(NONE_STR_SENTINEL, undefined or "") for t in rendered_templates
     ]
     separator = "\0" if null_separator else " "
     print(f"{header}{separator.join(rendered_templates)}")
@@ -184,7 +184,12 @@ def get_field_name(template: str) -> str:
 
     parser = MTLParser(get_field_values=lambda *x: x)
     if template_statements := parser.parse_statement(template):
-        return template_statements[0].field or template
+        if template_statements[0].field:
+            field_name = template_statements[0].field
+            if template_statements[0].subfield:
+                field_name += f":{template_statements[0].subfield}"
+            return field_name
+        return template
 
     raise ValueError(f"Could not find field in template: {template}")
 

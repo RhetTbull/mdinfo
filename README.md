@@ -12,6 +12,84 @@ The mdinfo command line tool can output selected metadata in CSV and JSON format
 Currently tested on Linux and macOS.
 ## Synopsis
 
+```bash
+$ mdinfo -p "{audio:artist}" -p "{audio:album}" -p "{audio:track}" -p "{size}" music/*.mp3
+track1.mp3: The Piano Guys Wonders 1 8806978
+track10.mp3: The Piano Guys Wonders 10 5765646
+track11.mp3: The Piano Guys Wonders 11 8048782
+track12.mp3: The Piano Guys Wonders 12 7834054
+track2.mp3: The Piano Guys Wonders 2 8563796
+track3.mp3: The Piano Guys Wonders 3 6162443
+track4.mp3: The Piano Guys Wonders 4 7863944
+track5.mp3: The Piano Guys Wonders 5 8194232
+track6.mp3: The Piano Guys Wonders 6 8794087
+track7.mp3: The Piano Guys Wonders 7 8873454
+track8.mp3: The Piano Guys feat. Shweta Subram Wonders 8 8582158
+track9.mp3: The Piano Guys Wonders 9 9011851
+```
+
+CSV output:
+
+```bash
+$ mdinfo -p "{audio:artist}" -p "{audio:album}" -p "{audio:track}" -p "{size}" music/*.mp3 --csv
+filename,audio:artist,audio:album,audio:track,size
+track1.mp3,The Piano Guys,Wonders,1,8806978
+track10.mp3,The Piano Guys,Wonders,10,5765646
+track11.mp3,The Piano Guys,Wonders,11,8048782
+track12.mp3,The Piano Guys,Wonders,12,7834054
+track2.mp3,The Piano Guys,Wonders,2,8563796
+track3.mp3,The Piano Guys,Wonders,3,6162443
+track4.mp3,The Piano Guys,Wonders,4,7863944
+track5.mp3,The Piano Guys,Wonders,5,8194232
+track6.mp3,The Piano Guys,Wonders,6,8794087
+track7.mp3,The Piano Guys,Wonders,7,8873454
+track8.mp3,The Piano Guys feat. Shweta Subram,Wonders,8,8582158
+track9.mp3,The Piano Guys,Wonders,9,9011851
+```
+
+JSON output:
+
+```bash
+$ mdinfo -p "{audio:artist}" -p "{audio:album}" -p "{audio:track}" -p "{size}" music/*.mp3 --json
+{
+    "audio:album": "Wonders",
+    "audio:artist": "The Piano Guys",
+    "audio:track": "1",
+    "filename": "track1.mp3",
+    "size": "8806978"
+}
+{
+    "audio:album": "Wonders",
+    "audio:artist": "The Piano Guys",
+    "audio:track": "10",
+    "filename": "track10.mp3",
+    "size": "5765646"
+}
+...
+```
+
+JSON array output:
+
+```bash
+$ mdinfo -p "{audio:artist}" -p "{audio:album}" -p "{audio:track}" -p "{size}" music/*.mp3 --json --array
+[
+    {
+        "audio:album": "Wonders",
+        "audio:artist": "The Piano Guys",
+        "audio:track": "1",
+        "filename": "track1.mp3",
+        "size": "8806978"
+    },
+    {
+        "audio:album": "Wonders",
+        "audio:artist": "The Piano Guys",
+        "audio:track": "10",
+        "filename": "track10.mp3",
+        "size": "5765646"
+    },
+    ...
+]
+```
 
 ## Command Line Usage
 
