@@ -189,6 +189,12 @@ formatter_settings = HelpFormatter.settings(
         is_flag=True,
     ),
     option(
+        "--undefined",
+        "-u",
+        help="String to use for undefined values. "
+        "Default is empty string for standard output and --csv and `null` for --json.",
+    ),
+    option(
         "--delimiter",
         "-d",
         help="Field delimiter for CSV output. Default is comma (,). "
@@ -223,6 +229,7 @@ def cli(
     no_filename: bool,
     no_header: bool,
     null_separator: bool,
+    undefined: str | None,
     delimiter: str,
     array: bool,
     path: bool,
@@ -232,15 +239,15 @@ def cli(
     try:
         if csv_option:
             print_templates_to_csv_for_files(
-                files, print_option, no_filename, path, no_header, delimiter
+                files, print_option, no_filename, path, no_header, delimiter, undefined
             )
         elif json_option:
             print_templates_to_json_for_files(
-                files, print_option, no_filename, path, array
+                files, print_option, no_filename, path, array, undefined
             )
         else:
             print_templates_for_files(
-                files, print_option, no_filename, path, null_separator
+                files, print_option, no_filename, path, null_separator, undefined
             )
     except UnknownFieldError as e:
         print_error(e)

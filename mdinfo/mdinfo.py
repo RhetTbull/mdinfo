@@ -28,10 +28,13 @@ def print_templates_for_files(
     no_filename: bool,
     path: bool,
     null_separator: bool,
+    undefined: str | None,
 ) -> None:
     """Print template string for each filepath"""
     for filepath in filepaths:
-        print_templates(filepath, templates, no_filename, path, null_separator)
+        print_templates(
+            filepath, templates, no_filename, path, null_separator, undefined
+        )
 
 
 def print_templates(
@@ -40,6 +43,7 @@ def print_templates(
     no_filename: bool,
     path: bool,
     null_separator: bool,
+    undefined: str | None,
 ) -> None:
     """Print template string for filepath"""
     options = RenderOptions(none_str=NONE_STR_SENTINEL)
@@ -54,7 +58,7 @@ def print_templates(
         else (f"{filepath}: " if path else f"{pathlib.Path(filepath).name}: ")
     )
     rendered_templates = [
-        str(t).replace(NONE_STR_SENTINEL, "") for t in rendered_templates
+        str(t).replace( NONE_STR_SENTINEL, undefined or "") for t in rendered_templates
     ]
     separator = "\0" if null_separator else " "
     print(f"{header}{separator.join(rendered_templates)}")
@@ -67,6 +71,7 @@ def print_templates_to_csv_for_files(
     path: bool,
     no_header: bool,
     delimiter: str,
+    undefined: str | None,
 ) -> None:
     """Print template string for each filepath as CSV"""
 
@@ -91,11 +96,11 @@ def print_templates_to_csv_for_files(
     if not no_filename:
         templates.insert(0, "{filepath}" if path else "{filepath.name}")
     for filepath in filepaths:
-        print_templates_to_csv(filepath, templates, csv_writer)
+        print_templates_to_csv(filepath, templates, csv_writer, undefined)
 
 
 def print_templates_to_csv(
-    filepath: str, templates: tuple[str], csv_writer: csv.writer
+    filepath: str, templates: tuple[str], csv_writer: csv.writer, undefined: str | None
 ) -> None:
     """Print template string for filepath as CSV"""
     options = RenderOptions(none_str=NONE_STR_SENTINEL)
@@ -103,7 +108,7 @@ def print_templates_to_csv(
         " ".join(FileTemplate(filepath).render(template, options=options))
         for template in templates
     ]
-    columns = [str(t).replace(NONE_STR_SENTINEL, "") for t in columns]
+    columns = [str(t).replace(NONE_STR_SENTINEL, undefined or "") for t in columns]
     csv_writer.writerow(columns)
 
 
@@ -113,11 +118,12 @@ def print_templates_to_json_for_files(
     no_filename: bool,
     path: bool,
     array: bool,
+    undefined: str | None,
 ) -> None:
     """Print template string for each filepath as JSON"""
     data_list = []
     for filepath in filepaths:
-        data = get_dict_for_templates(filepath, templates)
+        data = get_dict_for_templates(filepath, templates, undefined)
         if not no_filename:
             data["filename"] = filepath if path else pathlib.Path(filepath).name
         data_list.append(data)
@@ -128,7 +134,9 @@ def print_templates_to_json_for_files(
             print(convert_to_json(data))
 
 
-def get_dict_for_templates(filepath: str, templates: tuple[str]) -> dict[str, str]:
+def get_dict_for_templates(
+    filepath: str, templates: tuple[str], undefined: str | None
+) -> dict[str, str]:
     """Get dict for filepath for converting to JSON"""
     options = RenderOptions(none_str=NONE_STR_SENTINEL)
     data = {}
@@ -136,7 +144,9 @@ def get_dict_for_templates(filepath: str, templates: tuple[str]) -> dict[str, st
         field = get_field_name(template)
         template = strip_field_name(template)
         rendered = FileTemplate(filepath).render(template, options=options)
-        rendered = [str(t).replace(NONE_STR_SENTINEL, "") for t in rendered]
+        rendered = [
+            str(t).replace(NONE_STR_SENTINEL, undefined or "") for t in rendered
+        ]
         rendered = [t or None for t in rendered]
         data[field] = rendered[0] if len(rendered) == 1 else rendered
     return data
