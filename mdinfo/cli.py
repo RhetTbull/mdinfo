@@ -150,14 +150,16 @@ formatter_settings = HelpFormatter.settings(
         "-j",
         "json_option",
         is_flag=True,
-        help="Print metadata as JSON.",
+        help="Print metadata as JSON. The JSON field name will be the same as the template name. "
+        "You may specify a different field name by using the syntax: 'field_name:{template}' or 'field_name={template}'. ",
     ),
     option(
         "--csv",
         "-c",
         "csv_option",
         is_flag=True,
-        help="Print metadata as CSV.",
+        help="Print metadata as CSV. The CSV field name will be the same as the template name. "
+        "You may specify a different field name by using the syntax: 'field_name:{template}' or 'field_name={template}'. ",
     ),
     constraint=mutually_exclusive,
 )

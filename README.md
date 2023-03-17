@@ -37,8 +37,16 @@ Required:
                                  templates.   [required]
 
 Output Type: [mutually exclusive]
-  -j, --json                     Print metadata as JSON.
-  -c, --csv                      Print metadata as CSV.
+  -j, --json                     Print metadata as JSON. The JSON field name
+                                 will be the same as the template name. You may
+                                 specify a different field name by using the
+                                 syntax: 'field_name:{template}' or
+                                 'field_name={template}'.
+  -c, --csv                      Print metadata as CSV. The CSV field name will
+                                 be the same as the template name. You may
+                                 specify a different field name by using the
+                                 syntax: 'field_name:{template}' or
+                                 'field_name={template}'.
 
 Formatting Options:
   -f, --no-filename              Do not print filename headers. Without -h/--no-
