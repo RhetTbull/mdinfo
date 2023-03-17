@@ -2,11 +2,15 @@
 
 # This parser forms the basis for the template system used by osxphotos, exif2findertags, mdinfo, and mdinfo.
 
-# ZZZ add way to get help for built-ins, add mtlparser.md
+# TODO: add way to get help for built-ins, add mtlparser.md
+
+from __future__ import annotations
 
 import pathlib
 import re
 import shlex
+import dataclasses
+from dataclasses import dataclass
 from typing import Any, Callable, List, Optional, Tuple
 
 from textx import TextXSyntaxError, metamodel_from_file
@@ -22,6 +26,24 @@ class SyntaxError(Exception):
     """Raised when template engine cannot parse the template string"""
 
     pass
+
+
+# convert TemplateString to dataclass
+@dataclass
+class TemplateString:
+    pre: str = ""
+    delim: str | None = None
+    field: str | None = None
+    subfield: str | None = None
+    field_arg: str | None = None
+    filters: list[tuple[str, str]] = dataclasses.field(default_factory=list)
+    find_replace: list[tuple[str, str]] = dataclasses.field(default_factory=list)
+    operator: str | None = None
+    negation: bool = False
+    conditional: list[TemplateString] = dataclasses.field(default_factory=list)
+    bool: list[TemplateString] = dataclasses.field(default_factory=list)
+    default: TemplateString | None = None
+    post: str = ""
 
 
 MTL_GRAMMAR_MODEL = str(pathlib.Path(__file__).parent / "mtlparser.tx")
@@ -416,6 +438,115 @@ class MTLParser:
             results = [r + pre + post for r in results]
 
         return results
+
+    def parse_statement(
+        self,
+        template_statement: str,
+    ):
+        """Parse a template statement into a list of TemplateString tuples but don't render them"""
+
+        try:
+            model = self.parser.parse(template_statement)
+        except TextXSyntaxError as e:
+            raise SyntaxError(e) from e
+
+        if not model:
+            # empty string
+            return []
+
+        return self._parse_statement(model)
+
+    def _parse_statement(self, statement):
+        """Parse a textx:mtlparser.Statement into a list of TemplateString tuples but don't render them"""
+        return [self._parse_template_string(ts) for ts in statement.template_strings]
+
+    def _parse_template_string(
+        self,
+        ts,
+    ):
+        """Parse a TemplateString object into it's constituent parts but do not render them"""
+
+        if not ts.template:
+            # no template
+            return TemplateString(
+                pre=ts.pre or "",
+                post=ts.post or "",
+            )
+
+        # have a template field to process
+        field = ts.template.field
+        subfield = ts.template.subfield
+
+        # process filters
+        filters = ts.template.filter.value if ts.template.filter is not None else []
+
+        # process field arguments
+        if ts.template.fieldarg is not None:
+            field_arg = ts.template.fieldarg.value
+        else:
+            field_arg = None
+
+        # process delim
+        delim = None if ts.template.delim is None else ts.template.delim.value or ""
+
+        # process bool
+        if ts.template.bool is not None:
+            bool_val = (
+                self._parse_statement(ts.template.bool.value)
+                if ts.template.bool.value is not None
+                else [TemplateString()]
+            )
+        else:
+            bool_val = []
+
+        # process default
+        if ts.template.default is not None:
+            # default is also a TemplateString
+            default = (
+                self._parse_statement(ts.template.default.value)
+                if ts.template.default.value is not None
+                else [TemplateString()]
+            )
+        else:
+            default = []
+
+        # process conditional
+        if ts.template.conditional is not None:
+            operator = ts.template.conditional.operator
+            negation = ts.template.conditional.negation
+            conditional_values = [
+                self._parse_statement(value) for value in ts.template.conditional.value
+            ]
+        else:
+            operator = None
+            negation = None
+            conditional_values = []
+
+        # process find/replace
+        find_replace = (
+            [(pair.find, pair.replace) for pair in ts.template.findreplace.pairs]
+            if ts.template.findreplace
+            else []
+        )
+
+        pre = ts.pre or ""
+        post = ts.post or ""
+
+        return TemplateString(
+            pre,
+            delim,
+            field,
+            subfield,
+            field_arg,
+            filters,
+            find_replace,
+            operator,
+            negation,
+            conditional_values,
+            bool_val,
+            default,
+            post,
+        )
 
     def expand_variables_to_str(self, value: str, name: str) -> str:
         """
