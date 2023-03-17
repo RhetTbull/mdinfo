@@ -31,16 +31,14 @@ Usage: mdinfo [OPTIONS] FILES...
 
   Print metadata info for files
 
-Output Type: [exactly 1 required]
+Required:
   -p, --print METADATA_TEMPLATE  Template to use for printing metadata to
                                  stdout. May be repeated to print multiple
-                                 templates.
-  -j, --json FIELD_NAME METADATA_TEMPLATE
-                                 Print metadata as JSON. May be repeated to
-                                 print multiple templates.
-  -c, --csv FIELD_NAME METADATA_TEMPLATE
-                                 Print metadata as CSV. May be repeated to print
-                                 multiple templates.
+                                 templates.   [required]
+
+Output Type: [mutually exclusive]
+  -j, --json                     Print metadata as JSON.
+  -c, --csv                      Print metadata as CSV.
 
 Formatting Options:
   -f, --no-filename              Do not print filename headers. Without -h/--no-
@@ -61,6 +59,9 @@ Formatting Options:
   -h, --no-header                Do not print headers with CSV output.
   -0, --null-separator           Use null character as field separator with
                                  -p/--print.
+  -u, --undefined TEXT           String to use for undefined values. Default is
+                                 empty string for standard output and --csv and
+                                 `null` for --json.
   -d, --delimiter TEXT           Field delimiter for CSV output. Default is
                                  comma (,). To use tab as delimiter, use `-d
                                  '\t'` or `-d tab`.
