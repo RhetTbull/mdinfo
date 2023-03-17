@@ -4,6 +4,7 @@ import pathlib
 import re
 from os import stat, utime
 from shutil import copyfile
+import json
 
 import pytest
 from click.testing import CliRunner
@@ -54,3 +55,63 @@ def test_cli_print(source, target):
     )
     assert result.exit_code == 0
     assert result.output == "\n".join([p.name for p in source_files]) + "\n"
+
+
+def test_cli_csv(source, target):
+    """Test CLI with --csv"""
+    from mdinfo.cli import cli
+
+    source_files = list(source.glob("*"))
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "--print",
+            "file:{filepath.name}",
+            "-p",
+            "{size}",
+            "--no-filename",
+            "--csv",
+            *[str(p) for p in source_files],
+        ],
+    )
+    assert result.exit_code == 0
+    assert sorted(
+        s for s in [string.strip() for string in result.output.split("\n")] if s
+    ) == [
+        "file,size",
+        "flowers.jpeg,3449684",
+        "pears.jpg,2771656",
+        "warm_lights.mp3,7982019",
+    ]
+
+
+def test_cli_json(source, target):
+    """Test CLI with --json"""
+    from mdinfo.cli import cli
+
+    source_files = list(source.glob("*"))
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "--print",
+            "file:{filepath.name}",
+            "-p",
+            "{size}",
+            "--no-filename",
+            "--json",
+            "--array",
+            *[str(p) for p in source_files],
+        ],
+    )
+    assert result.exit_code == 0
+    got = sorted(json.loads(result.output), key=lambda x: x["file"])
+    expected = [
+        {"file": "flowers.jpeg", "size": "3449684"},
+        {"file": "pears.jpg", "size": "2771656"},
+        {"file": "warm_lights.mp3", "size": "7982019"},
+    ]
+    assert got == expected
