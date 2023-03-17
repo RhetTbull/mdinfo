@@ -21,7 +21,7 @@ from cloup import (
     option_group,
     version_option,
 )
-from cloup.constraints import If, RequireExactly, accept_none
+from cloup.constraints import If, RequireExactly, accept_none, mutually_exclusive
 from rich.console import Console
 from rich.highlighter import NullHighlighter
 from rich.markdown import Markdown
@@ -131,35 +131,35 @@ formatter_settings = HelpFormatter.settings(
 
 @command(cls=MDInfoCommand, formatter_settings=formatter_settings)
 @option_group(
-    "Output Type",
+    "Required",
     option(
         "--print",
         "-p",
         "print_option",
         metavar="METADATA_TEMPLATE",
         multiple=True,
+        required=True,
         help="Template to use for printing metadata to stdout. "
         "May be repeated to print multiple templates. ",
     ),
+)
+@option_group(
+    "Output Type",
     option(
         "--json",
         "-j",
         "json_option",
-        metavar="FIELD_NAME METADATA_TEMPLATE",
-        nargs=2,
-        multiple=True,
-        help="Print metadata as JSON. " "May be repeated to print multiple templates. ",
+        is_flag=True,
+        help="Print metadata as JSON.",
     ),
     option(
         "--csv",
         "-c",
         "csv_option",
-        nargs=2,
-        multiple=True,
-        metavar="FIELD_NAME METADATA_TEMPLATE",
-        help="Print metadata as CSV. " "May be repeated to print multiple templates. ",
+        is_flag=True,
+        help="Print metadata as CSV.",
     ),
-    constraint=RequireExactly(1),
+    constraint=mutually_exclusive,
 )
 @option_group(
     "Formatting Options",
@@ -207,7 +207,7 @@ formatter_settings = HelpFormatter.settings(
         help="Print full file path instead of filename. See also -f/--no-filename.",
     ),
 )
-@constraint(If("null_separator", then=RequireExactly(1)), ["print_option"])
+@constraint(If("null_separator", then=accept_none), ["csv_option", "json_option"])
 @constraint(If("delimiter", then=RequireExactly(1)), ["csv_option"])
 @constraint(If("no_header", then=RequireExactly(1)), ["csv_option"])
 @constraint(If("array", then=RequireExactly(1)), ["json_option"])
@@ -230,19 +230,22 @@ def cli(
 ):
     """Print metadata info for files"""
     try:
-        if print_option:
+        if csv_option:
+            print_templates_to_csv_for_files(
+                files, print_option, no_filename, path, no_header, delimiter
+            )
+        elif json_option:
+            print_templates_to_json_for_files(
+                files, print_option, no_filename, path, array
+            )
+        else:
             print_templates_for_files(
                 files, print_option, no_filename, path, null_separator
             )
-        if csv_option:
-            print_templates_to_csv_for_files(
-                files, csv_option, no_filename, path, no_header, delimiter
-            )
-        if json_option:
-            print_templates_to_json_for_files(files, json_option, no_filename, path, array)
     except UnknownFieldError as e:
         print_error(e)
         sys.exit(1)
+
 
 def rich_text(text, width=78):
     """Return rich formatted text"""
