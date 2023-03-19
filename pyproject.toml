@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mdinfo"
-version = "0.1.0"
+version = "0.1.1"
 description = "Print file metadata in various formats using a metadata template system."
 authors = ["Rhet Turnbull <rturnbull+git@gmail.com>"]
 license = "MIT License"
