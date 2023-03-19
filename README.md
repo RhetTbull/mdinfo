@@ -91,6 +91,32 @@ $ mdinfo -p "{audio:artist}" -p "{audio:album}" -p "{audio:track}" -p "{size}" m
 ]
 ```
 
+## Plugins
+
+mdinfo uses a plugin system to add support for different types of metadata and different file formats.
+
+The following plugins are available and can be installed using `pip install <plugin>` or `pipx inject mdinfo <plugin>`:
+
+### mdinfo-exiftool
+
+[mdinfo-exiftool](https://github.com/RhetTbull/mdinfo-exiftool): Adds support for using [exiftool](https://exiftool.org/) to extract metadata from files.
+
+`pip install mdinfo-exiftool`
+
+```bash
+mdinfo -p "{exiftool:XMP:Title}" -p "{exiftool:Keywords}" *.jpeg
+```
+
+### mdinfo-macos
+
+[mdinfo-macos](https://github.com/RhetTbull/mdinfo_macos): Adds support for macOS native metadata including all Spotlight metadata.
+
+`pip install mdinfo-macos`
+
+```bash
+mdinfo -p "{mac:kMDItemKeywords}" -p "{finder:comment}" *.*
+```
+
 ## Command Line Usage
 
 <!-- [[[cog
