@@ -33,6 +33,12 @@ or
 
     `doit test`
 
+## Versioning
+
+Use `bump2version` to update the version number.
+
+    `poetry run bump2version [major|minor|patch] [--verbose] [--dry-run]`
+
 ## README update
 
 The README.md is updated automatically using [cogapp](https://nedbatchelder.com/code/cog/).
