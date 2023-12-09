@@ -1,6 +1,6 @@
 """ pluggy hookimpl specification for mdinfo template system """
 
-from typing import List, Optional, Iterable
+from typing import Iterable, List, Optional
 
 from pluggy import HookspecMarker
 

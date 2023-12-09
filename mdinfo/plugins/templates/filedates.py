@@ -5,9 +5,10 @@ import os
 import sys
 from typing import Iterable, List, Optional
 
+from datetime_tzutils import datetime_utc_to_local
+
 import mdinfo
 from mdinfo.datetime_formatter import DateTimeFormatter
-from datetime_tzutils import datetime_utc_to_local
 
 TODAY = None
 

@@ -6,10 +6,10 @@
 
 from __future__ import annotations
 
+import dataclasses
 import pathlib
 import re
 import shlex
-import dataclasses
 from dataclasses import dataclass
 from typing import Any, Callable, List, Optional, Tuple
 
@@ -300,6 +300,9 @@ class MTLParser:
                     raise SyntaxError(
                         "var must have a subfield and value in form {var:subfield,value}"
                     )
+                default = [
+                    d for d in default if d != ""
+                ]  # #5, remove empty values from variable assignment
                 self.variables[subfield] = default
                 vals = []
             else:
@@ -423,7 +426,7 @@ class MTLParser:
             pre = ts.pre or ""
             post = ts.post or ""
 
-            rendered = [pre + val + post for val in vals]
+            rendered = [pre + str(val) + post for val in vals] if vals else [pre + post]
             results_new = []
             for ren in rendered:
                 for res in results:
