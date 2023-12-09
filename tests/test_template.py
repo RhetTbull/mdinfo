@@ -202,7 +202,7 @@ def test_template_render_punctuation():
 
 
 @pytest.mark.skipif(
-    platform.node() != "Rhets-MacBook-Pro.local",
+    platform.node() != "Rhets-MacBook-Air.local",
     reason="Only runs on author's personal machine",
 )
 def test_template_render_filestat():

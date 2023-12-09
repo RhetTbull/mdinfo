@@ -21,6 +21,7 @@ __all__ = [
     "utc_offset_seconds",
 ]
 
+
 # TODO: look at https://github.com/regebro/tzlocal for more robust implementation
 def get_local_tz(dt: datetime.datetime) -> datetime.tzinfo:
     """Return local timezone as datetime.timezone tzinfo for dt

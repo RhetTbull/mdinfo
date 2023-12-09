@@ -109,6 +109,9 @@ TEST_DATA = [
     ["{var:myvar,X}{X+foo|split(%myvar)}", ["Foo", "Bar"]],
     ["{var:myvar,{percent}}{%myvar+foo}", ["Foo%Bar"]],
     ["{var:pipe,{pipe}}{foobar[,,%pipe]}", ["foo|bar"]],
+    ["{var:myvar,Fizz}Foo{%myvar}Bar", ["FooFizzBar"]],  # #4
+    ["{var:myvar,Fizz}{foobar}{%myvar}Bar", ["foo,barFizzBar"]],  # #4
+    ["{var:myvar,}{%myvar?True,False}", ["False"]],  # #5
     # conditionals
     ["{foo contains Foo?YES,NO}", ["YES"]],
     ["{foo contains Fo?YES,NO}", ["YES"]],
