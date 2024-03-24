@@ -145,6 +145,15 @@ TEST_DATA = [
     ["{answer >= 43?YES,NO}", ["NO"]],
     ["{answer > 43?YES,NO}", ["NO"]],
     ["{answer < 43?YES,NO}", ["YES"]],
+    ["{foobar|autosplit&{fizz|autosplit}}", ["foo", "bar", "fizz", "buzz"]],
+    [
+        "{var:myvar,{foobar|autosplit&{fizz|autosplit}}}{%myvar|sort}",
+        ["bar", "buzz", "fizz", "foo"],
+    ],
+    [
+        "{var:myvar,{foobar|autosplit&{fizz|autosplit}}}{|+%myvar}",
+        ["foo|bar|fizz|buzz"],
+    ],
 ]
 
 FILTER_ARGS_REQUIRED = ["split", "chop", "chomp", "append", "prepend", "remove"]

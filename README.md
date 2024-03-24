@@ -196,36 +196,35 @@ rendered values using metadata information from the file being processed.
 In its simplest form, a template statement has the form: "{template_field}", for
 example "{size}" which resolves to the size of the file. Template fields may    
 also have subfields delineated by a : as in "{audio:artist}" which resolves to  
-the artist name for an audio file (e.g. mp3).  In this example, the field is    
-audio and the subfield is artist.  Template fields may also have attributes     
+the artist name for an audio file (e.g. mp3). In this example, the field is     
+audio and the subfield is artist. Template fields may also have attributes      
 delineated by a . as in "{created.year}" which resolves to the 4-digit year of  
 the file creation date. In this example, the field is created and the attribute 
 is year.                                                                        
 
-Template statements may contain one or more modifiers.  The full syntax is:     
+Template statements may contain one or more modifiers. The full syntax is:      
 
 "pretext{delim+template_field:subfield|filter[find,replace]                     
-conditional?bool_value,default}posttext"                                        
+conditional&combine_value?bool_value,default}posttext"                          
 
 Template statements are white-space sensitive meaning that white space (spaces, 
 tabs) changes the meaning of the template statement.                            
 
-pretext and posttext are free form text.  For example, if an image file has     
-Title (e.g. XMP:Title) "My file Title". the template statement "The title of the
-file is {exiftool:Title}", resolves to "The title of the file is My file Title".
-The pretext in this example is "The title if the file is " and the              
-template_field is {Title}.  Note: some punctuation such as commas cannot be used
-in the pretext or posttext.  For this reason, the template system provides      
-special punctuation templates like {comma} to insert punctuation where needed.  
-For example: {exiftool:Make}{comma}{exiftool:Model} could resolve to            
-Apple,iPhone SE.                                                                
+pretext and posttext are free form text. For example, if an image file has Title
+(e.g. XMP:Title) "My file Title". the template statement "The title of the file 
+is {exiftool:Title}", resolves to "The title of the file is My file Title". The 
+pretext in this example is "The title if the file is " and the template_field is
+{Title}. Note: some punctuation such as commas cannot be used in the pretext or 
+posttext. For this reason, the template system provides special punctuation     
+templates like {comma} to insert punctuation where needed. For example:         
+{exiftool:Make}{comma}{exiftool:Model} could resolve to Apple,iPhone SE.        
 
 Delimiter                                                                       
 
 delim: optional delimiter string to use when expanding multi-valued template    
 values in-place                                                                 
 
-+: If present before template name, expands the template in place.  If delim not
++: If present before template name, expands the template in place. If delim not 
 provided, values are joined with no delimiter.                                  
 
 e.g. if image file keywords are ["foo","bar"]:                                  
@@ -242,7 +241,7 @@ template_field: The template field to resolve.
 Filters                                                                         
 
 |filter: You may optionally append one or more filter commands to the end of the
-template field using the vertical pipe ('|') symbol.  Filters may be combined,  
+template field using the vertical pipe ('|') symbol. Filters may be combined,   
 separated by '|' as in: {user|capitalize|parens}.                               
 
 Valid filters are:                                                              
@@ -312,18 +311,18 @@ Find/Replace
 
 [find,replace]: optional text replacement to perform on rendered template value.
 For example, to replace "/" in a a keyword, you could use the template          
-"{exiftool:Keywords[/,-]}".  Multiple replacements can be made by appending "|" 
-and adding another find|replace pair.  e.g. to replace both "/" and ":" in      
-keywords: "{exiftool:Keywords[/,-|:,-]}".  find/replace pairs are not limited to
-single characters.  The "|" character cannot be used in a find/replace pair.    
+"{exiftool:Keywords[/,-]}". Multiple replacements can be made by appending "|"  
+and adding another find|replace pair. e.g. to replace both "/" and ":" in       
+keywords: "{exiftool:Keywords[/,-|:,-]}". find/replace pairs are not limited to 
+single characters. The "|" character cannot be used in a find/replace pair.     
 
 Conditional Operators                                                           
 
 conditional: optional conditional expression that is evaluated as boolean       
-(True/False) for use with the ?bool_value modifier.  Conditional expressions    
-take the form 'not operator value' where not is an optional modifier that       
-negates the operator.  Note: the space before the conditional expression is     
-required if you use a conditional expression.  Valid comparison operators are:  
+(True/False) for use with the ?bool_value modifier. Conditional expressions take
+the form 'not operator value' where not is an optional modifier that negates the
+operator. Note: the space before the conditional expression is required if you  
+use a conditional expression. Valid comparison operators are:                   
 
  • contains: template field contains value, similar to python's in              
  • matches: template field contains exactly value, unlike contains: does not    
@@ -338,7 +337,7 @@ required if you use a conditional expression.  Valid comparison operators are:
  • !=: template field does not equal value                                      
 
 Multiple values may be separated by '|' (the pipe symbol) when used with        
-contains, matches, startswith, and endswith.  value is itself a template        
+contains, matches, startswith, and endswith. value is itself a template         
 statement so you can use one or more template fields in value which will be     
 resolved before the comparison occurs. When applied to multi-valued fields (ie. 
 lists), the comparison is applied to each value in the list and evaluates to    
@@ -362,12 +361,24 @@ For example:
  • {audio:bitrate == 320} resolves to True if the audio file's bitrate is 320   
    kbps.                                                                        
 
+Combining Template Values                                                       
+
+&combine_value: Template fields may be combined with another template statement 
+to return multiple values. The combine_value is another template statement. For 
+example, the template {created.year&{audio:title,}} would resolve to ["1999",   
+"The Title"] if the file was created in 1999 and had the title "The Title".     
+Because the combine_value is a template statement, multiple templates may be    
+combined together by nesting the combine operator:                              
+{template1&{template2&{template3,},},}. In this example, a null default value is
+used to prevent the default value from being combined if any of the nested      
+templates does not resolve to a value.                                          
+
 Boolean Values                                                                  
 
 ?bool_value: Template fields may be evaluated as boolean (True/False) by        
-appending "?" after the field name or "[find/replace]".  If a field is True or  
+appending "?" after the field name or "[find/replace]". If a field is True or   
 has any value, the value following the "?" will be used to render the template  
-instead of the actual field value.  If the template field evaluates to False or 
+instead of the actual field value. If the template field evaluates to False or  
 has no value (e.g. file has no title and field is "{audio:title}") then the     
 default value following a "," will be used.                                     
 
@@ -383,9 +394,9 @@ and if it does not have a title:
 
 Default Values                                                                  
 
-,default: optional default value to use if the template name has no value.  This
+,default: optional default value to use if the template name has no value. This 
 modifier is also used for the value if False for boolean-type fields (see above)
-as well as to hold a sub-template for values like {created.strftime}.  If no    
+as well as to hold a sub-template for values like {created.strftime}. If no     
 default value provided and the field is null, mdinfo will use a default value of
 '_' (underscore character).                                                     
 
@@ -414,7 +425,7 @@ and {filepath.parent} returns the parent directory.
 Variables                                                                       
 
 You can define variables for later use in the template string using the format  
-{var:NAME,VALUE} where VALUE is a template statement.  Variables may then be    
+{var:NAME,VALUE} where VALUE is a template statement. Variables may then be     
 referenced using the format %NAME. For example: {var:foo,bar} defines the       
 variable %foo to have value bar. This can be useful if you want to re-use a     
 complex template value in multiple places within your template string or for    
@@ -424,17 +435,23 @@ pair but you can get around this limitation like so:
 {var:pipe,{pipe}}{audio:title[-,%pipe]} which replaces the - character with |   
 (the value of %pipe).                                                           
 
+Another use case for variables is filtering combined template values. For       
+example, using the &combine_value mechanism to combine two template values that 
+might result in duplicate values, you could do the following:                   
+{var:myvar,{template1&{template2,},}}{%myvar|uniq} which allows the use of the  
+uniq filter against the combined template values.                               
+
 Variables can also be referenced as fields in the template string, for example: 
 {var:year,{created.year}}{filepath.stem}-{%year}{filepath.suffix}. In some      
-cases, use of variables can make your template string more readable.  Variables 
+cases, use of variables can make your template string more readable. Variables  
 can be used as template fields, as values for filters, as values for conditional
-operations, or as default values.  When used as a conditional value or default  
+operations, or as default values. When used as a conditional value or default   
 value, variables should be treated like any other field and enclosed in braces  
 as conditional and default values are evaluated as template strings. For        
 example: `{var:name,John}{docx:author contains {%name}?{%name},Not-{%name}}     
 
 If you need to use a % (percent sign character), you can escape the percent sign
-by using %%.  You can also use the {percent} template field where a template    
+by using %%. You can also use the {percent} template field where a template     
 field is required. For example:                                                 
 
 {audio:title[:,%%]} replaces the : with % and {audio:title contains             

@@ -1,4 +1,4 @@
-""" Metadata Template Language (MTL) parser """
+"""Metadata Template Language (MTL) parser"""
 
 # This parser forms the basis for the template system used by osxphotos, exif2findertags, mdinfo, and mdinfo.
 
@@ -56,6 +56,7 @@ PUNCTUATION_FIELDS = {
     "{questionmark}": ["A question mark: '?'", "?"],
     "{pipe}": ["A vertical pipe: '|'", "|"],
     "{percent}": ["A percent sign: '%'", "%"],
+    "{ampersand}": ["an ampersand symbol: '&'", "&"],
     "{openbrace}": ["An open brace: '{'", "{"],
     "{closebrace}": ["A close brace: '}'", "}"],
     "{openparens}": ["An open parentheses: '('", "("],
@@ -247,6 +248,20 @@ class MTLParser:
                 delim = ts.template.delim.value or ""
                 delim = self.expand_variables_to_str(delim, "delim")
 
+            # process combine operator
+            is_combine = False
+            combine_val = None
+            if ts.template.combine is not None:
+                is_combine = True
+                combine_val = (
+                    self._render_statement(
+                        ts.template.combine.value,
+                        field_arg=field_arg,
+                    )
+                    if ts.template.combine.value is not None
+                    else [""]
+                )
+
             # process bool
             is_bool = False
             bool_val = None
@@ -416,6 +431,9 @@ class MTLParser:
                     vals = comparison_test(lambda v, c: v > c)
                 elif operator == ">=":
                     vals = comparison_test(lambda v, c: v >= c)
+
+            if is_combine and combine_val:
+                vals.extend(val for val in combine_val if val)
 
             if is_bool:
                 vals = bool_val if vals else default
