@@ -1,4 +1,4 @@
-""" Metadata Template Language (MTL) parser """
+"""Metadata Template Language (MTL) parser"""
 
 # This parser forms the basis for the template system used by osxphotos, exif2findertags, mdinfo, and mdinfo.
 
@@ -56,6 +56,7 @@ PUNCTUATION_FIELDS = {
     "{questionmark}": ["A question mark: '?'", "?"],
     "{pipe}": ["A vertical pipe: '|'", "|"],
     "{percent}": ["A percent sign: '%'", "%"],
+    "{ampersand}": ["an ampersand symbol: '&'", "&"],
     "{openbrace}": ["An open brace: '{'", "{"],
     "{closebrace}": ["A close brace: '}'", "}"],
     "{openparens}": ["An open parentheses: '('", "("],
