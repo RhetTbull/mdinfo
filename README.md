@@ -466,6 +466,7 @@ Field           Description
 {questionmark}  A question mark: '?'
 {pipe}          A vertical pipe: '|'
 {percent}       A percent sign: '%'
+{ampersand}     an ampersand symbol: '&'
 {openbrace}     An open brace: '{'
 {closebrace}    A close brace: '}'
 {openparens}    An open parentheses: '('
