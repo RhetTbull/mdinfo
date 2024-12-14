@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## Python 3.13 Support
+
+[v0.2.0](https://github.com/RhetTbull/mdinfo/releases/tag/v0.2.0)
+
+### 14 December 2024
+
+### Synopsis
+
+Support for Python 3.13 has been added.
+
 ## Combine operator
 
 [v0.1.3](https://github.com/RhetTbull/mdinfo/releases/tag/v0.1.3)

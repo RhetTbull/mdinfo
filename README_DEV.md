@@ -28,7 +28,7 @@ mdinfo uses [pytest](https://docs.pytest.org/en/stable/) for testing.
 The test suite can be run with the following command:
 
     `poetry run pytest`
-    
+
 or
 
     `doit test`
@@ -38,6 +38,18 @@ or
 Use `bump2version` to update the version number.
 
     `poetry run bump2version [major|minor|patch] [--verbose] [--dry-run]`
+
+## Build
+
+Run `doit` to build the project.
+
+    `doit`
+
+## Publish
+
+To publish the package to PyPI, run:
+
+    `poetry publish`
 
 ## README update
 
