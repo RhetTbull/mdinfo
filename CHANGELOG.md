@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Synopsis
 
 Support for Python 3.13 has been added.
-
+i
 ## Combine operator
 
 [v0.1.3](https://github.com/RhetTbull/mdinfo/releases/tag/v0.1.3)
